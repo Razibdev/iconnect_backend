@@ -12,7 +12,8 @@ app.use(express.static('public'));
 const userRouter = require("./User/User.route");
 const projectRoute = require("./Project/Project.route");
 const blogRoute = require("./Blog/Blog.route");
-const teamRoute = require("./Team/Team.route")
+const teamRoute = require("./Team/Team.route");
+const portfolioRoute = require('./Portfolio/Portfolio.route');
 
 const path = require("path");
 
@@ -71,6 +72,7 @@ app.use("/api/v1/users", userRouter);
 app.use("/api/v1/project", projectRoute);
 app.use("/api/v1/blog", blogRoute);
 app.use("/api/v1/team", teamRoute);
+app.use("/api/v1/portfolio", portfolioRoute);
 
 
 // app.use('/*', function(req,res) {

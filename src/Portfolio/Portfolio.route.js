@@ -8,24 +8,24 @@ router.route("/")
     .post(
         authControllers.protect,
         upload.fields([{ name: 'file', maxCount: 1 }]),
-        blogController.postTeam)
+        blogController.postPortfolio)
     .get(
         authControllers.protect,
-        blogController.getTeam
+        blogController.getPortfolio
     );
 
 router.route('/:id')
     .get(
         authControllers.protect,
-        blogController.getSingleTeam
+        blogController.getSinglePortfolio
     )
     .patch(
         upload.fields([{ name: 'file', maxCount: 1 }]),
         authControllers.protect,
-        blogController.updateTeam
+        blogController.updatePortfolio
     ).delete(
         authControllers.protect,
-        blogController.deleteTeam
+        blogController.deleteportfolio
     )
 
 module.exports = router;
