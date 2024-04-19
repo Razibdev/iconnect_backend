@@ -6,6 +6,9 @@ const DeleteObject = require("../utils/delete");
 const { deleteImage } = require('../utils/deleteImage');
 exports.postProject = catchAsync(async (req, res, next) =>{
     const data = req.body;
+    console.log(data);
+    console.log(req.files['file']);
+    console.log(req.files['files']);
     let slug_str_lower = data.project_name.replace(/\s+/g, '-').toLowerCase();
     let pro_sku = Math.floor(100000 + Math.random() * 900000);
     const project = await Project.create({
@@ -16,11 +19,11 @@ exports.postProject = catchAsync(async (req, res, next) =>{
         price: data.price
     });
 
-    if (req.files['file'].length) {
+    if (req.files['file']?.length) {
         project.image = req.files['file'][0].filename;
         await project.save();
     }
-    if (req.files['files'].length) {
+    if (req.files['files']?.length) {
         let image = Array();
         for (let i = 0; i < req.files['files'].length; i++) {
             let image_url = req.files['files'][i].filename;
@@ -50,8 +53,9 @@ exports.updateProject = catchAsync(async (req, res, next)=>{
     project.description = data.description;
     project.slug = slug_str_lower;
     project.price = data.price;
+    await project.save();
 
-    if (req.files['file'].length) {
+    if (req.files['file']?.length) {
         deleteImage(project.image, (err, message) => {
             if (err) {
                 console.error('Error deleting image:', err.message);
@@ -64,7 +68,7 @@ exports.updateProject = catchAsync(async (req, res, next)=>{
         await project.save();
     }
 
-    if (req.files['files'].length) {
+    if (req.files['files']?.length) {
 
         project.group_image.forEach((item) =>{
             deleteImage(item, (err, message) => {
@@ -86,7 +90,7 @@ exports.updateProject = catchAsync(async (req, res, next)=>{
         await project.save();
     }
 
-    await project.save();
+
     return res.status(202).json({
         message: 'Project updated successfully done',
         status: 'success',
@@ -114,7 +118,9 @@ exports.deleteProject = catchAsync(async (req, res, next) =>{
                     console.log(message);
                 }
             });
-        })
+        });
+
+        await Project.findByIdAndDelete(subCategoryId);
 
 
     return res.status(204).json({

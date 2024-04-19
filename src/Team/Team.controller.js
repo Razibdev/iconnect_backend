@@ -72,7 +72,7 @@ exports.deleteTeam = catchAsync(async (req, res, next) =>{
             }
         });
 
-    await team.delete();
+    await Team.findByIdAndDelete(teamId);
 
     return res.status(204).json({
         status: 'failure',

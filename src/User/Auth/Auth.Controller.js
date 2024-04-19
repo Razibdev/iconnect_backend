@@ -90,24 +90,25 @@ exports.protect = catchAsync(async (req, res, next) => {
     // console.log('token',req.headers.authorization);
     // console.log('token',req.headers.cookie);
 
-    const cookie = req.headers.cookie;
-    const cookies = cookie.split('; ');
-
     let token;
-    cookies.forEach(cookie => {
-        // Split each cookie into key-value pairs
-        const [key, value] = cookie.split('=');
-        // Check if the key is 'jwt'
-        if (key === 'jwt') {
-            token = value;
-        }
-    });
-    // if (
-    //     req.headers.authorization &&
-    //     req.headers.authorization.startsWith("Bearer")
-    // ) {
-    //     token = req.headers.authorization.split(" ")[1];
-    // }
+
+    if (
+        req.headers.authorization &&
+        req.headers.authorization.startsWith("Bearer")
+    ) {
+        token = req.headers.authorization.split(" ")[1];
+    }else{
+        const cookie = req.headers.cookie;
+        const cookies = cookie.split('; ');
+        cookies.forEach(cookie => {
+            // Split each cookie into key-value pairs
+            const [key, value] = cookie.split('=');
+            // Check if the key is 'jwt'
+            if (key === 'jwt') {
+                token = value;
+            }
+        });
+    }
 
     if (!token) {
         return next(
@@ -149,6 +150,17 @@ exports.checkUser = catchAsync(async (req, res, next) => {
         req.headers.authorization.startsWith("Bearer")
     ) {
         token = req.headers.authorization.split(" ")[1];
+    }else{
+        const cookie = req.headers.cookie;
+        const cookies = cookie.split('; ');
+        cookies.forEach(cookie => {
+            // Split each cookie into key-value pairs
+            const [key, value] = cookie.split('=');
+            // Check if the key is 'jwt'
+            if (key === 'jwt') {
+                token = value;
+            }
+        });
     }
     console.log('check', token)
     if (token) {

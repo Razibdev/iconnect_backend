@@ -6,32 +6,45 @@ const { deleteImage } = require('../utils/deleteImage');
 
 exports.postPortfolio = catchAsync(async (req, res, next) =>{
     const data = req.body;
+    console.log(req.files['file']);
+    console.log(req.files['files']);
+
+    let slug_str_lower = data.title.replace(/\s+/g, '-').toLowerCase();
+
     const portfolio = await Portfolio.create({
+        title: data.title,
+        slug: slug_str_lower,
         pre_text: data.pre_text,
         description: data.description
     });
 
-    if (req.files['file'].length) {
+    if (req.files['file']?.length) {
         portfolio.feature_image = req.files['file'][0].filename;
         await portfolio.save();
     }
+    // if (req.files['files']?.length) {
+    //     for (let i = 0; i < req.files['files'].length; i++) {
+    //         let image_url = req.files['files'][i].filename;
+    //
+    //         portfolio.image_list.push({
+    //             image: image_url
+    //         });
+    //         await portfolio.save();
+    //     }
+    // }
 
-    if (req.files['files'].length) {
+    if (req.files['files']?.length) {
+        let image = Array();
         for (let i = 0; i < req.files['files'].length; i++) {
             let image_url = req.files['files'][i].filename;
-            // image.push(image_url);
-            portfolio.image_list.push({
-                image: image_url
-            });
-            await portfolio.save();
+            image.push(image_url);
+
         }
-        // project.group_image = image;
-        // await project.save();
+        portfolio.image_list = image;
+        await portfolio.save();
     }
 
     // const portfolio = await Portfolio.findById(portfolioId);
-
-
 
     return res.status(201).json({
         status: 'success',
@@ -45,9 +58,11 @@ exports.postPortfolio = catchAsync(async (req, res, next) =>{
 exports.updatePortfolio = catchAsync(async (req, res, next)=>{
     const portfolioId = req.params.id;
     const data = req.body;
-
+    let slug_str_lower = data.title.replace(/\s+/g, '-').toLowerCase();
     const portfolio = await Portfolio.findById(portfolioId);
     portfolio.pre_text = data.pre_text;
+    portfolio.title = data.title;
+    portfolio.slug = slug_str_lower;
     portfolio.description = data.description;
 
     if (req.files['file'].length) {
@@ -63,17 +78,26 @@ exports.updatePortfolio = catchAsync(async (req, res, next)=>{
         await portfolio.save();
     }
 
-    if (req.files['files'].length) {
+    if (req.files['files']?.length) {
+
+        portfolio.image_list.forEach((item) =>{
+            deleteImage(item, (err, message) => {
+                if (err) {
+                    console.error('Error deleting image:', err.message);
+                } else {
+                    console.log(message);
+                }
+            });
+        })
+
+        let image = Array();
         for (let i = 0; i < req.files['files'].length; i++) {
             let image_url = req.files['files'][i].filename;
-            // image.push(image_url);
-            portfolio.image_list.push({
-                image: image_url
-            });
-            await portfolio.save();
+            image.push(image_url);
+
         }
-        // project.group_image = image;
-        // await project.save();
+        portfolio.image_list = image;
+        await portfolio.save();
     }
 
 
@@ -98,7 +122,7 @@ exports.deleteportfolio = catchAsync(async (req, res, next) =>{
         });
 
     portfolio.image_list.forEach((item) =>{
-        deleteImage(item.image, (err, message) => {
+        deleteImage(item, (err, message) => {
             if (err) {
                 console.error('Error deleting image:', err.message);
             } else {
@@ -107,7 +131,7 @@ exports.deleteportfolio = catchAsync(async (req, res, next) =>{
         });
     });
 
-    await portfolio.delete();
+    await Portfolio.findByIdAndDelete(teamId);
 
     return res.status(204).json({
         status: 'failure',

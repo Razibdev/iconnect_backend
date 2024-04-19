@@ -71,7 +71,7 @@ exports.deleteBlog = catchAsync(async (req, res, next) =>{
             }
         });
 
-    await blog.delete();
+    await Blog.findByIdAndDelete(subCategoryId);
 
     return res.status(204).json({
         status: 'failure',

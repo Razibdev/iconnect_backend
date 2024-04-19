@@ -10,13 +10,13 @@ router.route("/")
         upload.fields([{ name: 'file', maxCount: 1 }]),
         blogController.postTeam)
     .get(
-        authControllers.protect,
+        // authControllers.protect,
         blogController.getTeam
     );
 
 router.route('/:id')
     .get(
-        authControllers.protect,
+        // authControllers.protect,
         blogController.getSingleTeam
     )
     .patch(

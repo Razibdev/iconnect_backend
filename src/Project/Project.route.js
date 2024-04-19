@@ -7,11 +7,11 @@ const checkUserRole = require('../middleware/middleware');
 router.route("/")
     .post(
         // upload.single('file'),
-        // authControllers.protect,
+        authControllers.protect,
         // checkUserRole(['admin', 'super_admin', 'staff']),
         upload.fields([{ name: 'file', maxCount: 1 }, { name: 'files', maxCount: 10 }]),
-        projectController.postProject)
-    .get(
+        projectController.postProject
+    ).get(
         // authControllers.protect,
         // checkUserRole(['admin', 'super_admin', 'staff']),
         projectController.getProject
@@ -24,12 +24,12 @@ router.route('/:id')
         projectController.getSingleProject
     )
     .patch(
+        authControllers.protect,
         upload.fields([{ name: 'file', maxCount: 1 }, { name: 'files', maxCount: 10 }]),
-        // authControllers.protect,
-        // checkUserRole(['admin', 'super_admin', 'staff']),
         projectController.updateProject
+        // checkUserRole(['admin', 'super_admin', 'staff']),
     ).delete(
-        // authControllers.protect,
+        authControllers.protect,
         // checkUserRole(['admin', 'super_admin']),
         projectController.deleteProject
     )
