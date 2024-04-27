@@ -14,6 +14,8 @@ const projectRoute = require("./Project/Project.route");
 const blogRoute = require("./Blog/Blog.route");
 const teamRoute = require("./Team/Team.route");
 const portfolioRoute = require('./Portfolio/Portfolio.route');
+const clientRoute = require('./Client/Client.route');
+const contactRoute = require('./Contact/Contact.route');
 
 const path = require("path");
 
@@ -22,7 +24,7 @@ app.use(helmet({
     crossOriginResourcePolicy: false,
 }));
 const corsOrigin ={
-    origin:['http://localhost:3000', 'http://efashionbd.com', 'https://efashionbd.com', 'https://www.efashionbd.com',  'http://www.efashionbd.com'], //or whatever port your frontend is using
+    origin:['http://localhost:3000'], //or whatever port your frontend is using
     credentials:true,
     optionSuccessStatus:200
 }
@@ -43,7 +45,7 @@ if (process.env.NODE_ENV == "developement") {
 //     useTempFiles: true
 // }));
 
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 //Limit requests from same API
 const limiter = rateLimit({
     max: 100000,
@@ -54,7 +56,7 @@ const limiter = rateLimit({
 app.use("/api", limiter);
 
 //Body Parser, rading data form body into req.body
-app.use(express.json({ limit: "100kb" }));
+app.use(express.json({ limit: "1000kb" }));
 
 //Data sanitization against NoSQL query injection
 app.use(mongoSanitization());
@@ -73,7 +75,8 @@ app.use("/api/v1/project", projectRoute);
 app.use("/api/v1/blog", blogRoute);
 app.use("/api/v1/team", teamRoute);
 app.use("/api/v1/portfolio", portfolioRoute);
-
+app.use('/api/v1/client', clientRoute);
+app.use('/api/v1/contact', contactRoute);
 
 // app.use('/*', function(req,res) {
 //     res.sendFile(path.join(__dirname, 'build', 'index.html'));
